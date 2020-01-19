@@ -1,6 +1,7 @@
 package com.example.WebModels.user;
 
 import com.example.WebModels.user.authority.Authority;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -22,13 +23,15 @@ public class User {
 
     @NotEmpty
     @Size(min = 6)
+    @JsonIgnore
     private String password;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinColumn(name = "authority_id", nullable = false)
     private Authority authority;
 
-    @Column(name = "dateCreated")
+    @Column(name = "creationDate")
     private LocalDateTime localDateTime = LocalDateTime.now();
 
     public LocalDateTime getLocalDateTime() {

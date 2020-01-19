@@ -9,5 +9,4 @@ public class WebModelsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(WebModelsApplication.class, args);
 	}
-
 }

@@ -2,6 +2,8 @@ package com.example.WebModels.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -28,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
         String jwt = getJwt(httpServletRequest);
 
-        if(jwt !=null && jwt.startsWith("Token: ")){
+        if(jwt !=null && jwtTokenUtil.validateJwtToken(jwt)){
             String username = jwtTokenUtil.getUsernameFromToken(jwt);
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -37,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     userDetails,null,userDetails.getAuthorities());
 
             usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         }
         }
         catch(Exception e){
@@ -48,8 +51,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public String getJwt(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Token ")) {
-            return authHeader.replace("Token ", "");
+        if (authHeader != null && authHeader.startsWith("Token: ")) {
+            return authHeader.replace("Token: ", "");
         }
 
         return null;
